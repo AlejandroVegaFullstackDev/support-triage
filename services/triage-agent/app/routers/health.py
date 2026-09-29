@@ -1,16 +1,18 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
-from app.config.settings import get_config
 from app.controllers.health_controller import HealthController
 from app.dtos.health import HealthResponse
 
 router = APIRouter(tags=["health"])
 
 
-def get_health_controller() -> HealthController:
-    return HealthController(get_config())
+def get_health_controller(request: Request) -> HealthController:
+    return HealthController(
+        request.app.state.config.service_name,
+        request.app.state.triage_controller.provider_name,
+    )
 
 
 @router.get("/health", response_model=HealthResponse)

@@ -7,6 +7,9 @@ A human reviews and approves every change; the agent proposes, the human decides
 
 - `services/tickets-api/`: NestJS (TypeScript, ESM) ticket API. Owns PostgreSQL. Publishes `ticket.created`.
 - `services/triage-agent/`: FastAPI (Python 3.12) service. Consumes `ticket.created`, classifies the ticket through an `LLMProvider`, publishes `ticket.triaged`.
+- `services/web/`: React + Vite panel. Talks only to `tickets-api` over HTTP.
+- `scripts/smoke-test.sh`: end-to-end check against the running stack (also runs in CI).
+- `docs/adr/`: architecture decision records. Read them before changing the flow between services.
 - `docker-compose.yml`: local stack (PostgreSQL, RabbitMQ, both services).
 - `.github/workflows/ci.yml`: lint, type check, tests and image builds on every push.
 
@@ -57,7 +60,14 @@ Prefer the smallest safe change that solves the task correctly.
 - Validate every request body with DTO classes; reject unknown fields.
 - Dependency injection through constructors only; no service locators or module-level singletons.
 - ESM: relative imports end in `.js`.
-- Tests use `node:test` + `supertest`, compiled with `tsc`.
+- Tests use `node:test` + `supertest`, compiled with `tsc`. Replace the repository and event bus with the fakes in `test/fakes.ts`; tests never need PostgreSQL or RabbitMQ.
+
+## web (React / Vite)
+
+- Components render; data access lives in `src/api.ts` and `src/useTickets.ts`.
+- Colors and fonts come from the CSS custom properties in `src/styles.css`. Do not hardcode new colors.
+- User-facing copy is Spanish, sentence case, and says what happens ("Enviar a la cola", not "Submit").
+- Respect `prefers-reduced-motion` and keep visible keyboard focus.
 
 ## LLM provider rules
 
@@ -89,6 +99,7 @@ Preferred exception types: `ValidationError`, `BusinessRuleError`, `ExternalServ
 ## Database rules
 
 - All persistence through the ORM; no raw SQL unless explicitly requested and justified.
+- Schema changes only through TypeORM migrations in `src/database/migrations/` (DDL there is the one place SQL is expected). Never enable `synchronize`.
 - Commit only after all validations pass.
 - Avoid N+1 queries.
 - Keep persistence out of controllers and routers.

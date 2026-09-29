@@ -7,6 +7,9 @@ dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "pydantic-settings>=2.4",
+    "aio-pika>=10.1.0",
+    "anthropic>=1.9.0",
+    "openai>=3.20.0",
 ]
 
 [dependency-groups]
@@ -14,11 +17,13 @@ dev = [
     "pytest>=8.3",
     "httpx2",
     "ruff>=0.6",
+    "pytest-asyncio>=1.4.0",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 100

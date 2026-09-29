@@ -7,10 +7,15 @@ class AppConfig(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     service_name: str = "triage-agent"
-    environment: str = "local"
-    anthropic_api_key: str | None = None
-    openai_api_key: str | None = None
     rabbitmq_url: str = "amqp://guest:guest@localhost:5672/"
+    consume_events: bool = True
+    cors_origin: str = "http://localhost:5173"
+
+    anthropic_api_key: str | None = None
+    anthropic_model: str = "claude-opus-5-5"
+    openai_api_key: str | None = None
+    openai_model: str = "gpt-5-mini"
+    llm_timeout_seconds: float = 30.0
 
 
 @lru_cache

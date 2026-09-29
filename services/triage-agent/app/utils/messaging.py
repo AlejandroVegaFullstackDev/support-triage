@@ -1,0 +1,5 @@
+EXCHANGE = "tickets"
+DEAD_LETTER_EXCHANGE = "tickets.dlx"
+TICKET_CREATED = "ticket.created"
+TICKET_TRIAGED = "ticket.triaged"
+TICKET_CREATED_QUEUE = "triage-agent.ticket-created"
